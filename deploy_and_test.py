@@ -1,51 +1,59 @@
+import time
 import json
 from web3 import Web3
 from solcx import install_solc, compile_standard
 
-# 1. Connect to Ganache (Ensure Ganache is running in another terminal!)
+# 1. Connection and Compilation
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
-
-# 2. Compile Solidity Code
-print("Compiling Contract...")
 install_solc("0.8.0")
-with open("./SimpleStorage.sol", "r") as file:
-    simple_storage_file = file.read()
 
-compiled_sol = compile_standard(
-    {
-        "language": "Solidity",
-        "sources": {"SimpleStorage.sol": {"content": simple_storage_file}},
-        "settings": {
-            "outputSelection": {
-                "*": {"*": ["abi", "evm.bytecode.object"]}
-            }
-        },
-    },
-    solc_version="0.8.0",
-)
+with open("./CryptoLock.sol", "r") as file:
+    contract_source = file.read()
 
-# 3. Get Bytecode and ABI (Fixed the Metadata error here)
-bytecode = compiled_sol["contracts"]["SimpleStorage.sol"]["SimpleStorage"]["evm"]["bytecode"]["object"]
-abi = compiled_sol["contracts"]["SimpleStorage.sol"]["SimpleStorage"]["abi"]
+compiled_sol = compile_standard({
+    "language": "Solidity",
+    "sources": {"CryptoLock.sol": {"content": contract_source}},
+    "settings": {"outputSelection": {"*": {"*": ["abi", "evm.bytecode.object"]}}}
+}, solc_version="0.8.0")
 
-# 4. Deploy
-print("Deploying contract...")
+abi = compiled_sol["contracts"]["CryptoLock.sol"]["CryptoLock"]["abi"]
+bytecode = compiled_sol["contracts"]["CryptoLock.sol"]["CryptoLock"]["evm"]["bytecode"]["object"]
+
+# 2. Deployment
 account = w3.eth.accounts[0]
-SimpleStorage = w3.eth.contract(abi=abi, bytecode=bytecode)
+CryptoLock = w3.eth.contract(abi=abi, bytecode=bytecode)
+tx_hash = CryptoLock.constructor().transact({"from": account})
+receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+contract = w3.eth.contract(address=receipt.contractAddress, abi=abi)
+print(f"🚀 Contract deployed at: {receipt.contractAddress}")
 
-# Submit the transaction to deploy
-tx_hash = SimpleStorage.constructor().transact({"from": account})
-tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
-contract = w3.eth.contract(address=tx_receipt.contractAddress, abi=abi)
-print(f"✅ Contract successfully deployed at: {tx_receipt.contractAddress}")
+# 3. Task: Deposit and Lock for 10 seconds
+print("\n--- Testing Deposit ---")
+deposit_amount = w3.to_wei(1, "ether")
+lock_duration = 10 
+contract.functions.deposit(lock_duration).transact({"from": account, "value": deposit_amount})
+print(f"Deposited 1 ETH. Funds locked for {lock_duration} seconds.")
 
-# 5. Run the Internship Tasks
-print(f"Initial Value: {contract.functions.value().call()}")
+# 4. Task: Early Withdrawal (Handled properly so it doesn't crash)
+print("\n--- Testing Early Withdrawal Security ---")
+try:
+    contract.functions.withdraw().transact({"from": account})
+except Exception:
+    print("✅ Security Verified: The contract successfully blocked the early withdrawal.")
 
-print("Executing Increment (+1)...")
-contract.functions.increment().transact({"from": account})
-print(f"Value after increment: {contract.functions.value().call()}")
+# 5. The Fix: Wait and Force Blockchain Clock Forward
+print("\nWaiting for the lock to expire...")
+time.sleep(12)
+# This line forces Ganache to update its internal clock
+w3.provider.make_request("evm_mine", []) 
 
-print("Executing Decrement (-1)...")
-contract.functions.decrement().transact({"from": account})
-print(f"Value after decrement: {contract.functions.value().call()}")
+# 6. Task: Final Withdrawal
+print("\n--- Testing Final Withdrawal ---")
+try:
+    tx_final = contract.functions.withdraw().transact({"from": account})
+    w3.eth.wait_for_transaction_receipt(tx_final)
+    print("✅ Success: Funds successfully unlocked and withdrawn to your account!")
+except Exception as e:
+    print(f"❌ Error: {e}")
+
+print("\n--- Task 4 Complete ---")
