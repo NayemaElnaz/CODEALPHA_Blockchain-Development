@@ -24,3 +24,68 @@ This project implements a basic smart contract on the Ethereum blockchain. It al
 <img width="1364" height="708" alt="task11" src="https://github.com/user-attachments/assets/fc36aa86-bd69-4a83-868f-b7f2f0a35ba4" />
 
 ---
+
+## Task 4: 
+🔒 CryptoLock Smart Contract
+A time-locked "Savings Vault" smart contract. This project demonstrates how to handle **Ether transactions**, **Mappings**, and **Time-based restrictions** on the Ethereum blockchain.
+
+## Technical Implementation
+- Value Control: Uses the `payable` modifier to securely receive Ether.
+- Security: Implements the "Checks-Effects-Interactions" pattern in the `withdraw` function to prevent re-entrancy.
+- State Management: Tracks individual user balances and timestamps using Solidity Mappings.
+
+## How It Works
+1. Deposit: Users send Ether and specify a duration (in seconds).
+2. Lock: The contract calculates `block.timestamp + duration`.
+3. Validation: The `withdraw` function checks if the current time has surpassed the lock time.
+
+## Local Development
+- Compiler: Solidity 0.8.0
+- Interaction: Web3.py & Python 3.x
+- Network: Ganache CLI
+
+### Task 4 Output:
+<img width="1366" height="731" alt="Screenshot 2026-04-18 213314" src="https://github.com/user-attachments/assets/3b4c239b-1082-4af1-b9fa-0a4c21239489" />
+<img width="1347" height="713" alt="Screenshot 2026-04-18 213214" src="https://github.com/user-attachments/assets/458725c1-5aba-447e-8757-3d2b9ad666ec" />
+<img width="1071" height="533" alt="Screenshot 2026-04-18 214913" src="https://github.com/user-attachments/assets/6c81e63b-74ff-492b-af6f-06a470da1717" />
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
