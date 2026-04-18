@@ -3,6 +3,7 @@ Blockchain technology and decentralized application development.
 
 ## Task 1:
 Simple Storage Smart Contract
+
 This project implements a basic smart contract on the Ethereum blockchain. It allows a user to store an integer value and modify it using increment and decrement functions. 
 
 ## 🛠 Tech Stack
@@ -27,6 +28,7 @@ This project implements a basic smart contract on the Ethereum blockchain. It al
 
 ## Task 4: 
 🔒 CryptoLock Smart Contract
+
 A time-locked "Savings Vault" smart contract. This project demonstrates how to handle **Ether transactions**, **Mappings**, and **Time-based restrictions** on the Ethereum blockchain.
 
 ## Technical Implementation
@@ -47,6 +49,7 @@ A time-locked "Savings Vault" smart contract. This project demonstrates how to h
 ### Task 4 Output:
 <img width="1366" height="731" alt="Screenshot 2026-04-18 213314" src="https://github.com/user-attachments/assets/3b4c239b-1082-4af1-b9fa-0a4c21239489" />
 <img width="1347" height="713" alt="Screenshot 2026-04-18 213214" src="https://github.com/user-attachments/assets/458725c1-5aba-447e-8757-3d2b9ad666ec" />
+### Result:
 <img width="1071" height="533" alt="Screenshot 2026-04-18 214913" src="https://github.com/user-attachments/assets/6c81e63b-74ff-492b-af6f-06a470da1717" />
 
 ---
