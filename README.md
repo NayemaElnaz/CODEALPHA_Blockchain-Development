@@ -54,7 +54,28 @@ A time-locked "Savings Vault" smart contract. This project demonstrates how to h
 
 ---
 
+# Task 2: 
+Multi-Send Smart Contract
 
+This project focuses on the efficient distribution of assets on the Ethereum blockchain. The Multi-Send contract allows a user to send Ether to multiple recipients in a single transaction, significantly reducing manual effort and ensuring data consistency.
+
+## 🛠 Features:
+- Array Processing: Accepts a dynamic list of Ethereum addresses.
+- Equal Distribution Logic: Automatically calculates and sends equal shares of the sent Ether.
+- Transaction Safety: Uses the `call` method with success checks to ensure all transfers are completed correctly.
+
+## 🚀 Tech Stack
+- Solidity: Smart contract logic and loops.
+- Web3.py: Automated testing suite.
+- Ganache: Local blockchain environment.
+
+  ### Task 2 Output:
+ <img width="883" height="382" alt="Screenshot 2026-04-19 183334" src="https://github.com/user-attachments/assets/63124457-566c-4fed-ad91-62495fbe1df0" />
+
+ ---
+
+ 
+ 
 
 
 
