@@ -1,59 +1,43 @@
-import time
-import json
 from web3 import Web3
 from solcx import install_solc, compile_standard
 
-# 1. Connection and Compilation
+# 1. Setup
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
 install_solc("0.8.0")
 
-with open("./CryptoLock.sol", "r") as file:
-    contract_source = file.read()
+with open("./MultiSend.sol", "r") as file:
+    source = file.read()
 
-compiled_sol = compile_standard({
+compiled = compile_standard({
     "language": "Solidity",
-    "sources": {"CryptoLock.sol": {"content": contract_source}},
+    "sources": {"MultiSend.sol": {"content": source}},
     "settings": {"outputSelection": {"*": {"*": ["abi", "evm.bytecode.object"]}}}
 }, solc_version="0.8.0")
 
-abi = compiled_sol["contracts"]["CryptoLock.sol"]["CryptoLock"]["abi"]
-bytecode = compiled_sol["contracts"]["CryptoLock.sol"]["CryptoLock"]["evm"]["bytecode"]["object"]
+abi = compiled["contracts"]["MultiSend.sol"]["MultiSend"]["abi"]
+bytecode = compiled["contracts"]["MultiSend.sol"]["MultiSend"]["evm"]["bytecode"]["object"]
 
-# 2. Deployment
+# 2. Deploy
 account = w3.eth.accounts[0]
-CryptoLock = w3.eth.contract(abi=abi, bytecode=bytecode)
-tx_hash = CryptoLock.constructor().transact({"from": account})
+MultiSend = w3.eth.contract(abi=abi, bytecode=bytecode)
+tx_hash = MultiSend.constructor().transact({"from": account})
 receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 contract = w3.eth.contract(address=receipt.contractAddress, abi=abi)
-print(f"🚀 Contract deployed at: {receipt.contractAddress}")
+print(f"🚀 MultiSend Deployed at: {receipt.contractAddress}")
 
-# 3. Task: Deposit and Lock for 10 seconds
-print("\n--- Testing Deposit ---")
-deposit_amount = w3.to_wei(1, "ether")
-lock_duration = 10 
-contract.functions.deposit(lock_duration).transact({"from": account, "value": deposit_amount})
-print(f"Deposited 1 ETH. Funds locked for {lock_duration} seconds.")
+# 3. Task: Distribute 3 ETH to 3 different accounts
+recipients = [w3.eth.accounts[1], w3.eth.accounts[2], w3.eth.accounts[3]]
+amount_to_send = w3.to_wei(3, "ether")
 
-# 4. Task: Early Withdrawal (Handled properly so it doesn't crash)
-print("\n--- Testing Early Withdrawal Security ---")
-try:
-    contract.functions.withdraw().transact({"from": account})
-except Exception:
-    print("✅ Security Verified: The contract successfully blocked the early withdrawal.")
+print(f"\nDistributing {w3.from_wei(amount_to_send, 'ether')} ETH to {len(recipients)} recipients...")
 
-# 5. The Fix: Wait and Force Blockchain Clock Forward
-print("\nWaiting for the lock to expire...")
-time.sleep(12)
-# This line forces Ganache to update its internal clock
-w3.provider.make_request("evm_mine", []) 
+tx = contract.functions.distributeEther(recipients).transact({
+    "from": account, 
+    "value": amount_to_send
+})
+w3.eth.wait_for_transaction_receipt(tx)
 
-# 6. Task: Final Withdrawal
-print("\n--- Testing Final Withdrawal ---")
-try:
-    tx_final = contract.functions.withdraw().transact({"from": account})
-    w3.eth.wait_for_transaction_receipt(tx_final)
-    print("✅ Success: Funds successfully unlocked and withdrawn to your account!")
-except Exception as e:
-    print(f"❌ Error: {e}")
-
-print("\n--- Task 4 Complete ---")
+print("✅ Success: All recipients received their equal share!")
+for i, addr in enumerate(recipients):
+    balance = w3.from_wei(w3.eth.get_balance(addr), 'ether')
+    print(f"Recipient {i+1} ({addr[:10]}...): {balance} ETH")
