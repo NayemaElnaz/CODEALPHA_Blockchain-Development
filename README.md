@@ -74,7 +74,27 @@ This project focuses on the efficient distribution of assets on the Ethereum blo
 
  ---
 
- 
+# Task 3: 
+Polling System Smart Contract
+
+This project implements a decentralized voting mechanism. It allows users to create transparent, time-bound polls where the results are immutable and protected against double-voting via cryptographic address tracking.
+
+## 🛠 Features :
+- Custom Data Structures: Uses `Structs` to group poll metadata and results.
+- Identity Integrity: Maps `address => bool` to ensure each unique wallet can only vote once per poll.
+- Time-Bound Logic: Restricts voting and winner declaration based on `block.timestamp`.
+
+## 🚀 Tech Stack:
+- Solidity 0.8.0: Contract architecture.
+- Web3.py: Automated multi-account testing.
+- Ganache: Local blockchain simulation.
+
+### Task 3 Output :
+<img width="910" height="499" alt="Screenshot 2026-04-19 200955" src="https://github.com/user-attachments/assets/66700e5a-4385-4c12-bd8e-27eae053ca31" />
+
+---
+
+
  
 
 
